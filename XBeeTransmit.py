@@ -20,24 +20,29 @@ def main():
     transmitDevice.close()
     
     print(remoteDevice.get_16bit_addr())
-    try:
-        transmitDevice.open()
-        instruction = getCommand()
-        sendInstructions(instruction)
-    except:
-        print("couldn't send data")
+    cont = 'y'
+    while(cont == 'y'):
+        try:
+            transmitDevice.open()
+            instruction = getCommand()
+            
+            #print(hex(instruction))
+            sendInstructions(instruction)
+        except Exception as e:
+            print("failed to send data")
+            print(e)
+            transmitDevice.close()
         transmitDevice.close()
-        
-    print("hello")
+        cont = input('Continue?')
     transmitDevice.close()
     
 def getCommand():
     cmd = input("Specify a Command: ")
     dist = input("Distance: ")
-    return str(RobotInstruction.create_instruction(cmd,int(dist)))
+    return RobotInstruction.create_instruction(cmd,int(dist))
 
 def sendInstructions(data):
-    transmitDevice.send_data(remoteDevice, data); #sends the data to the remote device
+    transmitDevice.send_data(remoteDevice, data) #sends the data to the remote device
     
 if __name__ == '__main__':
     main()
