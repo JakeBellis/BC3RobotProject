@@ -1,4 +1,3 @@
-
 const unsigned char PacketLength = 30;
 unsigned char Packet1[PacketLength];
 int led = 13;
