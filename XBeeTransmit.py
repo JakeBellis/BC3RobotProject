@@ -19,9 +19,10 @@ remoteDevice = RemoteXBeeDevice(transmitDevice, XBee64BitAddress.from_hex_string
 def main():
     transmitDevice.close()
     
+    print('transmitting to: ')
     print(remoteDevice.get_16bit_addr())
     cont = 'y'
-    while(cont == 'y'):
+    while(cont != 'q'):
         try:
             transmitDevice.open()
             instruction = getCommand()
