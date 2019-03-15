@@ -5,13 +5,26 @@ XBee xbee = XBee();
 
 Rx16Response rx16 = Rx16Response();
 Rx64Response rx64 = Rx64Response();
+const int BASE_ADDRESS = 0x0036;
+
+bool newCommandFlag = 0;
+
+
+// 16-bit addressing: Enter address of remote XBee, typically the coordinator
+uint8_t status[] = { 0, 0, 0 };
+Tx16Request tx = Tx16Request(BASE_ADDRESS, status, sizeof(status));
+TxStatusResponse txStatus = TxStatusResponse();
 
 uint8_t option = 0;
-uint8_t data[30] = {};
+struct commands{
+	uint8_t data[30];
+};
 
 unsigned long start = millis();
 bool startFlag = 0; //false before transmit is ready
 
+commands xbeeReceive();
+void xbeeAck();
 
 void setup() {
   // put your setup code here, to run once:
@@ -23,11 +36,17 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-	xbeeReceive();
-
+	commands commandArray = commands();
+	commandArray = xbeeReceive();
+	status[0] = commandArray.data[0];
+	status[1] = commandArray.data[1];
+	status[2] = 1;
+	xbeeAck();
+	
 }
 
-void xbeeReceive(){
+commands xbeeReceive(){
+	commands cmd = commands();
   xbee.readPacket();
   if (xbee.getResponse().isAvailable()) {
 	  // got something
@@ -43,23 +62,16 @@ void xbeeReceive(){
 			  Serial.println("16 bit response received");
 			  xbee.getResponse().getRx16Response(rx16);
 			  option = rx16.getOption();
-			  for (int i = 0; i < rx16.getDataLength(); i++) {
-				  data[i] = rx16.getData(i);
-				  Serial.print(F("0x")); Serial.print(data[i],HEX); Serial.print(" "); //print packet hex data
+			  int i = 0;
+			  for (i = 0; i < rx16.getDataLength(); i++) {
+				  cmd.data[i] = rx16.getData(i);
+				  Serial.print(F("0x")); Serial.print(cmd.data[i],HEX); Serial.print(" "); //print packet hex data
 			  }
+				cmd.data[i] = "H";
 		      Serial.println();
-		  }
-		  else {
-			  xbee.getResponse().getRx64Response(rx64);
-			  option = rx64.getOption();
-			  for (int i = 0; i < rx64.getDataLength(); i++) {
-				  data[i] = rx64.getData(i);
-			  }
+			newCommandFlag = 1;
 		  }
 
-		  for (int i = 0; i < sizeof(data); i++) {
-			  Serial.print(data[i] + " ");
-		  }
 		  Serial.println();
 
 
@@ -70,4 +82,43 @@ void xbeeReceive(){
 		  // or flash error led
 	  }
   }
+	return cmd;
+}
+
+void xbeeAck(){
+	 if(newCommandFlag){
+
+	  //tx = Tx16Request(BASE_ADDRESS, status, sizeof(status));
+      xbee.send(tx);
+
+  
+    // after sending a tx request, we expect a status response
+    // wait up to 5 seconds for the status response
+    if (xbee.readPacket(5000)) {
+        // got a response!
+
+        // should be a znet tx status            	
+    	if (xbee.getResponse().getApiId() == TX_STATUS_RESPONSE) {
+    	   xbee.getResponse().getTxStatusResponse(txStatus);
+    		
+    	   // get the delivery status, the fifth byte
+           if (txStatus.getStatus() == SUCCESS) {
+            	// success.  time to celebrate
+             	//Serial.println("recieved transmit acknowledgment");
+           } else {
+            	// the remote XBee did not receive our packet. is it powered on?
+             	Serial.println("did not receive tx Ack");
+           }
+        }      
+    } else if (xbee.getResponse().isError()) {
+      //nss.print("Error reading packet.  Error code: ");  
+      //nss.println(xbee.getResponse().getErrorCode());
+      // or flash error led
+    } else {
+      // local XBee did not provide a timely TX Status Response.  Radio is not configured properly or connected
+      Serial.println("did not receive tx response!");
+    }
+    newCommandFlag = 0;
+}
+    delay(1000);
 }

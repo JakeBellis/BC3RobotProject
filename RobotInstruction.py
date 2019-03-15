@@ -21,3 +21,13 @@ def int2Hex(value):
     LSB = value & 0xFF
     print(hex(MSB) + " " + hex(LSB))
     return [int(MSB),int(LSB)]
+
+def create_instruction_literal(command,distance):
+    commandVal = []
+    commandVal.append(int(command))
+    commandVal.append(distance)
+    print(commandVal)
+    inst_out = bytearray()
+    for val in commandVal:
+        inst_out.append(val)
+    return inst_out
