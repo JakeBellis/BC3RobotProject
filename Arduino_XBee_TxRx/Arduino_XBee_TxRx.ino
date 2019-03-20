@@ -11,8 +11,11 @@ bool newCommandFlag = 0;
 
 
 // 16-bit addressing: Enter address of remote XBee, typically the coordinator
-uint8_t status[] = { 0, 0, 0 };
-Tx16Request tx = Tx16Request(BASE_ADDRESS, status, sizeof(status));
+uint8_t status[] = { 0, 0, 0 }; //status is {command, distance, completed} echoes command and says if completed
+uint8_t coords[] = {0,0,0,0};
+
+Tx16Request txAck = Tx16Request(BASE_ADDRESS, status, sizeof(status)); 
+Tx16Request txCoords = Tx16Request(BASE_ADDRESS, coords, sizeof(coords));
 TxStatusResponse txStatus = TxStatusResponse();
 
 uint8_t option = 0;
@@ -25,6 +28,7 @@ bool startFlag = 0; //false before transmit is ready
 
 commands xbeeReceive();
 void xbeeAck();
+//void xbeeSendCoords();
 
 void setup() {
   // put your setup code here, to run once:
@@ -89,7 +93,7 @@ void xbeeAck(){
 	 if(newCommandFlag){
 
 	  //tx = Tx16Request(BASE_ADDRESS, status, sizeof(status));
-      xbee.send(tx);
+      xbee.send(txAck);
 
   
     // after sending a tx request, we expect a status response
@@ -122,3 +126,4 @@ void xbeeAck(){
 }
     delay(1000);
 }
+
