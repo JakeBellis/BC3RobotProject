@@ -3,6 +3,7 @@ import time
 from Point import Point as pt
 
 gui = tk.Tk()
+points = []
 
 def main():
     display = tk.Canvas(gui)
@@ -15,7 +16,7 @@ def main():
     print(p1.getDistance(p2))
     display.pack()
 
-    display.bind("<Button-1>", onClick)
+    display.bind("<Button-1>", lambda event, canvas = display: onClick(event,canvas))
 
     gui.mainloop()
 
@@ -24,8 +25,14 @@ def drawPoint(point, canvas):
     canvas.create_oval(point.x - 2, point.y -2, point.x + 2, point.y + 2)
     canvas.pack()
 
-def onClick(event):
-    print("clicked at: " + event.x + ", " + event.y)
+def onClick(event, canvas):
+    """
+    draws a point at the position where the mouse was clicked
+    """
+    print("clicked at: " + str(event.x) + ", " + str(event.y)) 
+    points.append(pt(event.x,event.y))
+    drawPoint(pt(event.x,event.y), canvas)
+
 
 
 
