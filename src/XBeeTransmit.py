@@ -11,7 +11,7 @@ from digi.xbee.models.address import XBee16BitAddress, XBee64BitAddress
 
 COMport = 'COM9'
 baud_rate = 9600
-remote_address = '0010'
+remote_address = '0008'
 transmitDevice = XBeeDevice(COMport,baud_rate)
 remoteDevice = RemoteXBeeDevice(transmitDevice, XBee64BitAddress.from_hex_string(remote_address), XBee16BitAddress.from_hex_string(remote_address))
 
