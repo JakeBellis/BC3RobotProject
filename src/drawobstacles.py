@@ -1,3 +1,6 @@
+"""
+A place to test the display classes that will be included in the display manager.
+"""
 import tkinter as tk
 import time
 from Point import Point as pt
@@ -21,8 +24,10 @@ def main():
     gui.mainloop()
 
 
+
 def drawPoint(point, canvas):
-    canvas.create_oval(point.x - 2, point.y -2, point.x + 2, point.y + 2)
+    point_size = 2
+    canvas.create_oval(point.x - point_size, point.y - point_size, point.x + point_size, point.y + point_size, fill = "black")
     canvas.pack()
 
 def onClick(event, canvas):
@@ -32,9 +37,6 @@ def onClick(event, canvas):
     print("clicked at: " + str(event.x) + ", " + str(event.y)) 
     points.append(pt(event.x,event.y))
     drawPoint(pt(event.x,event.y), canvas)
-
-
-
 
 
 if __name__ == '__main__':
