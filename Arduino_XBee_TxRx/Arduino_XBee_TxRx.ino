@@ -35,6 +35,7 @@ void setup() {
   Serial.begin(9600); //serial usb to computer
   Serial1.begin(9600); //serial for xbee communication
   Serial.println("serial start");
+  Serial.println(sizeof(ack));
   xbee.setSerial(Serial1);
 }
 
@@ -93,6 +94,7 @@ void xbeeAck(){
 	 if(newCommandFlag){
 
 	  //tx = Tx16Request(BASE_ADDRESS, ack, sizeof(ack));
+      Serial.println("Sending Ack");
       xbee.send(txAck);
 
   

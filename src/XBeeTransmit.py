@@ -5,8 +5,10 @@ Created on Feb 18, 2019
 '''
 from digi.xbee.devices import XBeeDevice, RemoteXBeeDevice
 import RobotInstruction
+import PathBuilder as PB
 from builtins import input
 from digi.xbee.models.address import XBee16BitAddress, XBee64BitAddress
+from DisplayManager import DisplayManager
 
 
 import sys
@@ -17,7 +19,7 @@ except IndexError:
     COMport = 'COM9'
 
 baud_rate = 9600
-remote_address = '0008'
+remote_address = '0006'
 transmitDevice = XBeeDevice(COMport,baud_rate)
 remoteDevice = RemoteXBeeDevice(transmitDevice, XBee64BitAddress.from_hex_string(remote_address), XBee16BitAddress.from_hex_string(remote_address))
 
@@ -28,25 +30,33 @@ def main():
     print('transmitting to: ')
     print(remoteDevice.get_16bit_addr())
     cont = 'y'
-    while(cont != 'q'):
+    pb = PB.PathBuilder()
+    while(cont != 'n'):
         try:
+
             transmitDevice.open()
-            instruction = getCommand()
+            instruction = getCommand(pb)
 
             #print(hex(instruction))
             sendInstructions(instruction)
+            pb.clearPath()
         except Exception as e:
             print("failed to send data")
             print(e)
+            pb.clearPath()
             transmitDevice.close()
         transmitDevice.close()
         cont = input('Continue?')
     transmitDevice.close()
 
-def getCommand():
-    cmd = input("Specify a Command: ")
-    dist = input("Distance: ")
-    return RobotInstruction.create_instruction_literal(cmd,int(dist)) #create instruction for actual program
+def getCommand(pathBuilder):
+    cont = 'y'
+    while(cont != 'n'):
+        cmd = input("Specify a Command: ")
+        dist = input("Distance: ")
+        pathBuilder.addCommand(cmd,int(dist))
+        cont = input("Add another command? ")
+    return pathBuilder.getPathToSend() #create instruction for actual program
 
 def sendInstructions(data):
     transmitDevice.send_data(remoteDevice, data) #sends the data to the remote device
