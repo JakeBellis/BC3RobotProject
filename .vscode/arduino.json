@@ -1,6 +1,7 @@
 {
-    "sketch": "XBee_variable_payload\\XBee_variable_payload.ino",
+    "sketch": "src\\Arduino_Robot.ino",
     "board": "arduino:avr:mega",
     "configuration": "cpu=atmega2560",
-    "port": "COM7"
+    "port": "COM7",
+    "programmer": "AVRISP mkII"
 }
