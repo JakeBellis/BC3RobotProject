@@ -1,7 +1,7 @@
 import tkinter as tk
 import time
 import random
-from Point import Point as pt
+from GUIGeometry import Point as pt
 
 
 #Main function to test functionalitys
