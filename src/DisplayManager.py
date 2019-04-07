@@ -2,44 +2,57 @@ import tkinter as tk
 import time
 import random
 from GUIGeometry import Point as pt
+from GUIGeometry import Line as ln
 
 
 #Main function to test functionalitys
-# def main():
-#     disp = DisplayManager()
-#     # for i in range(10):
-#     #     x = input("X: ")
-#     #     y = input("Y: ")
-#     #     disp.plotPoint(pt(int(x),int(y))) 
+def main():
+    disp = DisplayManager()
+    # for i in range(10):
+    #     x = input("X: ")
+    #     y = input("Y: ")
+    #     disp.plotPoint(pt(int(x),int(y))) 
     
-#     #disp.mainWindow.mainloop()
-#     pt1 = pt(100,100,"red",10)
-#     pt2 = pt(200,200,"green",10)
-#     disp.drawPoint(pt1)
-#     disp.drawPoint(pt2)
+    #disp.mainWindow.mainloop()
+    pt1 = pt(100,100,"red",10)
+    pt2 = pt(200,200,"green",10)
+    disp.drawPoint(pt1)
+    disp.drawPoint(pt2)
 
-#     pt1.move(300,300)
-#     disp.redrawPoint(pt1)
-#     disp.display.after(0,movePoints(pt1,pt2,disp))
-#     disp.display.mainloop()
+    pt1.move(300,300)
+    disp.redrawPoint(pt1)
+    ln1 = ln(pt1, pt2)
+    # disp.lines.append(ln1)
+    # disp.drawLine(ln1)
+    disp.display.after(0,movePoints(pt1,pt2,disp))
+    disp.display.mainloop()
 
-# def movePoints(point1,point2,canvas):
-#     for i in range(20):
-#         pt1x = random.randint(5,595); pt1y = random.randint(5,595)
-#         pt2x = random.randint(5,595); pt2y = random.randint(5,595)
-#         point1.move(pt1x,pt1y)
-#         point2.move(pt2x,pt2y)
-#         canvas.redrawPoint(point1)
-#         canvas.redrawPoint(point2)
-#         canvas.display.update()
-#         time.sleep(1)
+def movePoints(point1,point2,canvas):
+    lineArray = []
+    verticalLine = ln.from_coords(300,0,300,600)
+    canvas.drawLine(verticalLine)
+    
+    for i in range(20):
+        pt1x = random.randint(5,595); pt1y = random.randint(5,595)
+        pt2x = random.randint(5,595); pt2y = random.randint(5,595)
+        point1.move(pt1x,pt1y)
+        point2.move(pt2x,pt2y)
+        lineArray.append(ln(point1,point2))
+        canvas.drawLine(lineArray[i])
+        canvas.redrawPoint(point1)
+        canvas.redrawPoint(point2)
+        print(verticalLine.isIntersecting(lineArray[i]))
+        canvas.display.update()
+        time.sleep(3)
 
 class DisplayManager:
 
     mainWindow = tk.Tk()
     points = []
-    displayPoints = []
-    display = tk.Canvas(mainWindow,width=255,height = 255)
+    lines = []
+    displayPoints = [] #names of points assigned by canvas in case one needs deleted
+    displayLines = []
+    display = tk.Canvas(mainWindow,width=600,height = 600)
 
     def __init__(self):
         self.display.bind("<Button-1>", self.onClick)
@@ -58,7 +71,9 @@ class DisplayManager:
         self.display.delete(point.displayVal)
         point.displayVal = self.display.create_oval(point.x - point.size, point.y - point.size, point.x + point.size, point.y + point.size, fill = point.color)
 
-        
+    def drawLine(self,line):
+        line.displayVal = self.display.create_line(line.point1.x,line.point1.y,line.point2.x, line.point2.y)
+        self.display.pack()
 
     def onClick(self, event):
         """
@@ -69,5 +84,5 @@ class DisplayManager:
         self.drawPoint(pt(event.x,event.y))
 
 
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    main()

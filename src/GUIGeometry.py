@@ -46,6 +46,7 @@ class Point:
 class Line:
     point1 = Point(0,0)
     point2 = Point(0,0)
+    displayVal = ""
 
     def __init__(self,point1,point2):
         """Creates a line using 2 points
@@ -54,14 +55,56 @@ class Line:
         self.point1 = point1
         self.point2 = point2
 
-    def from_coords(self,x1,y1,x2,y2): #creates a line from coordinates instead of points
+    @classmethod
+    def from_coords(cls,x1,y1,x2,y2): #creates a line from coordinates instead of points
         pt1 = Point(x1,y1)
         pt2 = Point(x2,y2)
-        return Line(pt1,pt2)
+        return cls(pt1,pt2)
 
     def length(self):
         return self.point1.getDistance(self.point2)
 
-    #def isIntersecting(line):
+    def onLineCollinear(self, point):
+        """Helper method for isIntersecting()
+            Determines if a collinear point is on a segment
+        Arguments:
+            point {[type]} -- [description]
+        
+        Returns:
+            Boolean -- if the point is on the line
+        """
+
+        if((point.x <= max(self.point1.x, self.point2.x)) and (point.x >= min(self.point1.x, self.point2.x)) and (point.y <= max(self.point1.y, self.point2.y)) and (point.y >= min(self.point1.y, self.point2.y))): 
+        # and (point.y <= max(self.point1.y, self.point2.y)) and (point.y >= min(self.point1.y, self.point2.y))):
+            return True
+
+        return False
+        
+
+    def isIntersecting(self, line):
+        #get the orientations needed for cases
+        o1 = self.point1.getOrientation(self.point2, line.point1)
+        o2 = self.point1.getOrientation(self.point2, line.point2)
+        o3 = line.point1.getOrientation(line.point2, self.point1)
+        o4 = line.point1.getOrientation(line.point2, self.point2)
+
+        #general case
+        if (o1 != o2 and o3 != o4):
+            return True
+
+        #cases if lines are collinear
+        if (o1 == 0 and self.onLineCollinear(line.point1)):
+            return True
+        if (o2 == 0 and self.onLineCollinear(line.point2)):
+            return True
+        if (o3 == 0 and line.onLineCollinear(self.point1)):
+            return True
+        if (o4 == 0 and line.onLineCollinear(self.point2)):
+            return True
+        
+        return False
+        
+
+
 
     

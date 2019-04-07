@@ -3,7 +3,7 @@ A place to test the display classes that will be included in the display manager
 """
 import tkinter as tk
 import time
-from Point import Point as pt
+from GUIGeometry import Point as pt
 
 gui = tk.Tk()
 points = []
