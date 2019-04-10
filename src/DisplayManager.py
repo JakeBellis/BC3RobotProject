@@ -21,7 +21,7 @@ def main():
 
     pt1.move(300,300)
     disp.redrawPoint(pt1)
-    ln1 = ln(pt1, pt2)
+    #ln1 = ln(pt1, pt2)
     # disp.lines.append(ln1)
     # disp.drawLine(ln1)
     disp.display.after(0,movePoints(pt1,pt2,disp))
@@ -32,18 +32,18 @@ def movePoints(point1,point2,canvas):
     verticalLine = ln.from_coords(300,0,300,600)
     canvas.drawLine(verticalLine)
     
-    for i in range(20):
-        pt1x = random.randint(5,595); pt1y = random.randint(5,595)
-        pt2x = random.randint(5,595); pt2y = random.randint(5,595)
-        point1.move(pt1x,pt1y)
-        point2.move(pt2x,pt2y)
-        lineArray.append(ln(point1,point2))
-        canvas.drawLine(lineArray[i])
-        canvas.redrawPoint(point1)
-        canvas.redrawPoint(point2)
-        print(verticalLine.isIntersecting(lineArray[i]))
-        canvas.display.update()
-        time.sleep(3)
+    # for i in range(20):
+    #     pt1x = random.randint(5,595); pt1y = random.randint(5,595)
+    #     pt2x = random.randint(5,595); pt2y = random.randint(5,595)
+    #     point1.move(pt1x,pt1y)
+    #     point2.move(pt2x,pt2y)
+    #     lineArray.append(ln(point1,point2))
+    #     canvas.drawLine(lineArray[i])
+    #     canvas.redrawPoint(point1)
+    #     canvas.redrawPoint(point2)
+    #     print(verticalLine.isIntersecting(lineArray[i]))
+    #     canvas.display.update()
+    #     time.sleep(0.2)
 
 class DisplayManager:
 
@@ -80,8 +80,24 @@ class DisplayManager:
         draws a point at the position where the mouse was clicked
         """
         print("clicked at: " + str(event.x) + ", " + str(event.y)) 
-        self.points.append(pt(event.x,event.y))
-        self.drawPoint(pt(event.x,event.y))
+        newPoint = pt(event.x,event.y)
+        self.points.append(newPoint)
+        self.drawPoint(newPoint)
+        DRAW_LINE_THRESHOLD = 50
+        for testPoint in self.points:
+            if(newPoint.getDistance(testPoint) < DRAW_LINE_THRESHOLD and testPoint != newPoint):
+                newLine = ln(newPoint,testPoint)
+                makeLine = True
+                for line in self.lines:
+                    if newLine.isIntersecting(line): #if it is intersecting a previous line, it is redundant
+                        if newLine.point1 != line.point1 and newLine.point1 != line.point2 and  \
+                        newLine.point2 != line.point1 and newLine.point2 != line.point2:
+                            makeLine = False
+                            break
+                if makeLine:
+                    self.lines.append(newLine)
+                    self.drawLine(newLine)
+            
 
 
 if __name__ == '__main__':
