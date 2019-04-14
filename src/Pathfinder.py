@@ -109,24 +109,28 @@ class PathManager:
             Path -- the optimal path for the robot to take
         """
 
-        self.heap = MinHeap(initial=[Path(startPoint)], key= lambda Path: ( 3 * Path.degreesTurned + 0.8 * Path.distance + Path.last.point.getManhattanDist(endPoint)))
+        self.heap = MinHeap(initial=[Path(startPoint)], key= lambda Path: ( 3 * Path.degreesTurned + 1 * Path.distance + Path.last.point.getManhattanDist(endPoint)))
         visitedPoints = set() #list of points to end and distance so we don't visit a node twice
         currentPath = None
         currentPoint = None
         time.clock()
+        pointsConsidered = 0
         while(self.heap._data[0][1].last.point.getDistance(endPoint) > 10):
 
             if(currentPath):
                 while((currentPath.last.point.x, currentPath.last.point.y) in visitedPoints):
                     currentPath = self.heap.pop()
+                currentPath = self.heap.pop() #find the first point we haven't visited
             else:
                 currentPath = self.heap.pop()
             
+            pointsConsidered += 1
             visitedPoints.add((currentPath.last.point.x, currentPath.last.point.y))
             # print("distance: " + str(currentPath.last.point.getDistance(endPoint)))
             # print("distance traveled: " + str(currentPath.distance))
             
             currentPoint = currentPath.last.point
+            vp = sorted(visitedPoints)
             for angle in range(0,360,ROBOT_MIN_TURN_ANGLE): #adds the lines at the turn angles to the path
                 intersectsLine = False
                 nextPoint = Point(int(currentPath.last.point.x + math.cos(angle*math.pi/180)*ROBOT_TRAVEL_DISTANCE), int(currentPath.last.point.y + math.sin(angle*math.pi/180)*ROBOT_TRAVEL_DISTANCE))
@@ -136,7 +140,7 @@ class PathManager:
                     if pathLine.isIntersecting(line):
                         intersectsLine = True
                         break
-                if(intersectsLine == False and ((nextPoint.x,nextPoint.y) not in visitedPoints)):
+                if(intersectsLine == False and not self.pointVisited(nextPoint,visitedPoints)):
                     nextPath = currentPath.addPoint(nextPoint)
                     z = nextPath.last.point.getDistance(endPoint)
                     self.heap.push(nextPath)
@@ -148,10 +152,18 @@ class PathManager:
                     
         print("FOUND PATH!!!!!!")
         print(time.clock())
+        print(pointsConsidered)
         return currentPath
         
     
 
+    def pointVisited(self,point,visitedSet):
+        THRESHOLD = 5 #number of adjacent integer valued points to consider
+        for x in range(point.x - THRESHOLD, point.x + THRESHOLD + 1):
+            for y in range(point.y - THRESHOLD, point.y + THRESHOLD + 1):
+                if ((x,y) in visitedSet):
+                    return True
+        return False
 
 
 class MinHeap(object):

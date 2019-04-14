@@ -9,23 +9,18 @@ import Pathfinder
 #Main function to test functionality
 def main():
     disp = DisplayManager() 
-    # for i in range(10):
-    #     x = input("X: ")
-    #     y = input("Y: ")
-    #     disp.plotPoint(pt(int(x),int(y))) 
     
-    #disp.mainWindow.mainloop()
     pt1 = pt(100,100,"green",10)
     pt2 = pt(500,500,"red",10)
     disp.drawPoint(pt1)
     disp.drawPoint(pt2)
     testLines = [ln(pt(100,200),pt(300,200)),ln(pt(300,100),pt(300,200)),ln(pt(50,300),pt(400,300))]
-    # for line in testLines:
-    #     disp.drawLine(line)
+    for line in testLines:
+        disp.drawLine(line)
     pm = Pathfinder.PathManager()
     path = pm.findPath(pt1,pt2,testLines)
     currentNode = path.head
-    for i in range(path.size - 1):
+    for i in range(path.size-1):
         pathLine = ln(currentNode.point, currentNode.nextNode.point)
         disp.drawLine(pathLine)
         currentNode = currentNode.nextNode
