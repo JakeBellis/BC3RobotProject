@@ -3,24 +3,38 @@ import time
 import random
 from GUIGeometry import Point as pt
 from GUIGeometry import Line as ln
+import Pathfinder
 
 
-#Main function to test functionalitys
+#Main function to test functionality
 def main():
-    disp = DisplayManager()
+    disp = DisplayManager() 
     # for i in range(10):
     #     x = input("X: ")
     #     y = input("Y: ")
     #     disp.plotPoint(pt(int(x),int(y))) 
     
     #disp.mainWindow.mainloop()
-    pt1 = pt(100,100,"red",10)
-    pt2 = pt(200,200,"green",10)
+    pt1 = pt(100,100,"green",10)
+    pt2 = pt(500,500,"red",10)
     disp.drawPoint(pt1)
     disp.drawPoint(pt2)
+    testLines = [ln(pt(100,200),pt(300,200)),ln(pt(300,100),pt(300,200)),ln(pt(50,300),pt(400,300))]
+    # for line in testLines:
+    #     disp.drawLine(line)
+    pm = Pathfinder.PathManager()
+    path = pm.findPath(pt1,pt2,testLines)
+    currentNode = path.head
+    for i in range(path.size - 1):
+        pathLine = ln(currentNode.point, currentNode.nextNode.point)
+        disp.drawLine(pathLine)
+        currentNode = currentNode.nextNode
+    
+    print(path.size)
+    
 
-    pt1.move(300,300)
-    disp.redrawPoint(pt1)
+    # pt1.move(300,300)
+    # disp.redrawPoint(pt1)
     #ln1 = ln(pt1, pt2)
     # disp.lines.append(ln1)
     # disp.drawLine(ln1)
@@ -29,8 +43,8 @@ def main():
 
 def movePoints(point1,point2,canvas):
     lineArray = []
-    verticalLine = ln.from_coords(300,0,300,600)
-    canvas.drawLine(verticalLine)
+    # verticalLine = ln.from_coords(300,0,300,600)
+    # canvas.drawLine(verticalLine)
     
     # for i in range(20):
     #     pt1x = random.randint(5,595); pt1y = random.randint(5,595)
@@ -57,6 +71,8 @@ class DisplayManager:
     def __init__(self):
         self.display.bind("<Button-1>", self.onClick)
         self.display.pack()
+        # findpathBtn = tk.Button(master=self.mainWindow, text = "Find Path") #command = callback
+        # findpathBtn.pack()
     
 
     def drawPoint(self, point):
@@ -72,12 +88,12 @@ class DisplayManager:
         point.displayVal = self.display.create_oval(point.x - point.size, point.y - point.size, point.x + point.size, point.y + point.size, fill = point.color)
 
     def drawLine(self,line):
-        line.displayVal = self.display.create_line(line.point1.x,line.point1.y,line.point2.x, line.point2.y)
+        line.displayVal = self.display.create_line(line.point1.x,line.point1.y,line.point2.x, line.point2.y,fill = line.color)
         self.display.pack()
 
     def onClick(self, event):
         """
-        draws a point at the position where the mouse was clicked
+        draws a point at the position where the mouse was clicked and connects the lines together
         """
         print("clicked at: " + str(event.x) + ", " + str(event.y)) 
         newPoint = pt(event.x,event.y)

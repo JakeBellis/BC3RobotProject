@@ -30,6 +30,19 @@ class Point:
         """returns the distance from a second point"""
         return math.sqrt(pow(secondPoint.x - self.x, 2) + pow(secondPoint.y - self.y, 2))
     
+    def getAngleBetween(self,secondPoint):
+        tot_dist = self.getDistance(secondPoint)
+        x_dist = secondPoint.x - self.x
+        y_dist = secondPoint.y - self.y
+        if(x_dist < 0 and y_dist < 0):
+            return math.sin(y_dist/tot_dist) + 270
+        elif(x_dist < 0):
+            return math.sin(y_dist/tot_dist) + 90 
+        elif (y_dist < 0):
+            return math.sin(y_dist/tot_dist) + 360
+        else:
+            return math.sin(y_dist/tot_dist)
+
     def getOrientation(self, q, r):
         """gets the orientation of three ordered points {self, q, r}
         0: collinear
@@ -42,18 +55,30 @@ class Point:
         else:
             return 1 if (val > 0) else 2
 
+    def getManhattanDist(self,secondPoint):
+        return abs(self.x - secondPoint.x) + abs(self.y - secondPoint.y)
+
 
 class Line:
     point1 = Point(0,0)
     point2 = Point(0,0)
     displayVal = ""
 
-    def __init__(self,point1,point2):
+    def __init__(self,point1,point2, color = None, size = None):
         """Creates a line using 2 points
         
         """
         self.point1 = point1
         self.point2 = point2
+
+        if color is None:
+            self.color = "black"
+        else:
+            self.color = color
+        if size is None:
+            self.size = 2
+        else:
+            self.size = size
 
     @classmethod
     def from_coords(cls,x1,y1,x2,y2): #creates a line from coordinates instead of points
