@@ -4,6 +4,8 @@ Created on Feb 18, 2019
 @author: Jake
 '''
 
+import Pathfinder
+
 def create_instruction(command, distance):
     """takes in a command and distance and converts it to instruction to 
     be sent"""
@@ -31,3 +33,7 @@ def create_instruction_literal(command,distance):
     for val in commandVal:
         inst_out.append(val)
     return inst_out
+
+def create_instruction_from_path(path):
+    
+

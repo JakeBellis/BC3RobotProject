@@ -12,20 +12,20 @@ def main():
     
     pt1 = pt(100,100,"green",10)
     pt2 = pt(500,500,"red",10)
-    disp.drawPoint(pt1)
-    disp.drawPoint(pt2)
-    testLines = [ln(pt(100,200),pt(300,200)),ln(pt(300,100),pt(300,200)),ln(pt(50,300),pt(400,300))]
-    for line in testLines:
-        disp.drawLine(line)
-    pm = Pathfinder.PathManager()
-    path = pm.findPath(pt1,pt2,testLines)
-    currentNode = path.head
-    for i in range(path.size-1):
-        pathLine = ln(currentNode.point, currentNode.nextNode.point)
-        disp.drawLine(pathLine)
-        currentNode = currentNode.nextNode
+    # disp.drawPoint(pt1)
+    # disp.drawPoint(pt2)
+    # testLines = [ln(pt(100,200),pt(300,200)),ln(pt(300,100),pt(300,200)),ln(pt(50,300),pt(400,300))]
+    # for line in testLines:
+    #     disp.drawLine(line)
+    # pm = Pathfinder.PathManager()
+    # path = pm.findPath(pt1,pt2,testLines)
+    # currentNode = path.head
+    # for i in range(path.size-1):
+    #     pathLine = ln(currentNode.point, currentNode.nextNode.point)
+    #     disp.drawLine(pathLine)
+    #     currentNode = currentNode.nextNode
     
-    print(path.size)
+    #print(path.size)
     
 
     # pt1.move(300,300)
@@ -59,6 +59,8 @@ class DisplayManager:
     mainWindow = tk.Tk()
     points = []
     lines = []
+    startPoint = pt(100,100,"green",10)
+    endPoint = pt(500,500,"red",10)
     displayPoints = [] #names of points assigned by canvas in case one needs deleted
     displayLines = []
     display = tk.Canvas(mainWindow,width=600,height = 600)
@@ -66,8 +68,9 @@ class DisplayManager:
     def __init__(self):
         self.display.bind("<Button-1>", self.onClick)
         self.display.pack()
-        # findpathBtn = tk.Button(master=self.mainWindow, text = "Find Path") #command = callback
-        # findpathBtn.pack()
+        self.drawPoint(self.startPoint); self.drawPoint(self.endPoint)
+        findpathBtn = tk.Button(master=self.mainWindow, text = "Find Path", command = self.getPath)
+        findpathBtn.pack()
     
 
     def drawPoint(self, point):
@@ -108,7 +111,21 @@ class DisplayManager:
                 if makeLine:
                     self.lines.append(newLine)
                     self.drawLine(newLine)
-            
+    
+    def getPath(self):
+        pm = Pathfinder.PathManager()
+        path = pm.findPath(self.startPoint,self.endPoint,self.lines)
+        currentNode = path.head
+        nodeArray = []
+        for i in range(path.size-1):
+            pathLine = ln(currentNode.point, currentNode.nextNode.point, "red")
+            self.drawLine(pathLine)
+            nodeArray.append(currentNode)
+            currentNode = currentNode.nextNode
+        return path
+    
+    def clearObstacles(self):
+        return 0
 
 
 if __name__ == '__main__':
