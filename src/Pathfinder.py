@@ -10,7 +10,7 @@ import time
 
 
 ROBOT_TRAVEL_DISTANCE = 10
-ROBOT_MIN_TURN_ANGLE = 45
+ROBOT_MIN_TURN_ANGLE = 90
 
 class PathNode: #Node in the linked list that holds a point
     nextNode = None
@@ -21,7 +21,7 @@ class PathNode: #Node in the linked list that holds a point
     def __init__(self, point):
         self.point = point
         self.nextNode = None
-        self.angleToNext = None
+        self.angleToNext = 0
         self.heading = 0
 
     @classmethod
@@ -64,7 +64,7 @@ class Path:
         NewPath.last = PathNode.fromNode(self.last)
         NewPath.distance = self.distance
         NewPath.size = self.size
-        #NewPath.degreesTurned = self.degreesTurned
+        NewPath.degreesTurned = self.degreesTurned
         nextNode = PathNode(nextPoint)
         NewPath.append(nextPoint)
         NewPath.last = nextNode
@@ -111,7 +111,7 @@ class PathManager:
             Path -- the optimal path for the robot to take
         """
 
-        self.heap = MinHeap(initial=[Path(startPoint)], key= lambda Path: ( 3 * Path.degreesTurned + 0.8 * Path.distance + Path.last.point.getManhattanDist(endPoint)))
+        self.heap = MinHeap(initial=[Path(startPoint)], key= lambda Path: ( 0.1 * Path.degreesTurned + 0.8 * Path.distance + Path.last.point.getManhattanDist(endPoint)))
         visitedPoints = set() #list of points to end and distance so we don't visit a node twice
         currentPath = None
         currentPoint = None

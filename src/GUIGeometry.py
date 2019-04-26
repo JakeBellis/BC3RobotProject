@@ -35,13 +35,13 @@ class Point:
         x_dist = secondPoint.x - self.x
         y_dist = secondPoint.y - self.y
         if(x_dist < 0 and y_dist < 0):
-            return math.sin(y_dist/tot_dist) + 270
+            return math.asin(y_dist/tot_dist)*180/math.pi + 270
         elif(x_dist < 0):
-            return math.sin(y_dist/tot_dist) + 90 
+            return math.asin(y_dist/tot_dist)*180/math.pi + 90 
         elif (y_dist < 0):
-            return math.sin(y_dist/tot_dist) + 360
+            return math.asin(y_dist/tot_dist)*180/math.pi + 360
         else:
-            return math.sin(y_dist/tot_dist)
+            return math.asin(y_dist/tot_dist)*180/math.pi
 
     def getOrientation(self, q, r):
         """gets the orientation of three ordered points {self, q, r}
